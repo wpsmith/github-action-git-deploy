@@ -104,7 +104,7 @@ fi
 printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
 # echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
 chmod 600 "$ROOT/.ssh/id_rsa_sg"
-printenvINPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
+printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
 chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
 
 # TO BE REMOVED
