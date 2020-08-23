@@ -30,6 +30,9 @@ inputs:
   email:
     description: An email for the git user creating the git commit.
     required: true
+  debug:
+    description: Verbose output.
+    required: false
 runs:
   using: docker
   image: Dockerfile
