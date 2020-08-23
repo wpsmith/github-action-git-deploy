@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT=./root
+ROOT=/root
 
 echo "Version: v$(cat VERSION)"
 echo "INPUT_EMAIL: $INPUT_EMAIL"
@@ -110,9 +110,9 @@ else
     echo "$INPUT_SSH_KNOWN_HOSTS" >> "$ROOT/.ssh/known_hosts"
 fi
 
-if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "creating ssh key files"
-fi
+# if [[ -n "$INPUT_DEBUG" ]]; then
+#     echo "creating ssh key files"
+# fi
 ## printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
 # echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
 # chmod 600 "$ROOT/.ssh/id_rsa_sg"
@@ -135,11 +135,14 @@ fi
 #   IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
 
 
-# if [[ -n "$INPUT_DEBUG" ]]; then
-#     echo "starting ssh agent"
-# fi
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "starting ssh agent"
+fi
+# ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+# echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
+# echo "adding ssh key"
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
+echo "$INPUT_SSH_KEY" | tr -d '\r' | ssh-add -
 # ssh-add "$ROOT/.ssh/id_rsa_sg"
 # echo "$INPUT_SSH_PASSWORD"
 
