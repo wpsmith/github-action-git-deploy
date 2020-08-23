@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT=./root
+ROOT=/root
 
 parse_url() {
     local url=""
@@ -76,8 +76,6 @@ echo "adding ssh key"
 echo "$INPUT_SSH_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 cat "$ROOT/.ssh/id_rsa_sg" | ssh-add -
-
-return 
 
 echo "updating git config"
 git config core.sshCommand "sshpass -p $INPUT_SSH_PASSWORD ssh -vvv -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
