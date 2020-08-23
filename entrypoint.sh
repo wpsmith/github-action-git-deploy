@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT=/root
+ROOT=./root
 
 parse_url() {
     local url=""
@@ -43,8 +43,9 @@ if [[ ! -f "$ROOT/.ssh/config" ]]; then
     echo "creating .ssh/config"
     touch "$ROOT/.ssh/config"
     echo "Host $URL_HOST
-  HostName $URL_HOST" >> "$ROOT/.ssh/config"
-    if [ -n "$URL_PASS" ]; then
+  HostName $URL_HOST
+  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
+    if [ -n "$URL_PORT" ]; then
         echo "  Port $URL_PORT" >> "$ROOT/.ssh/config"
     fi
     if [ -n "$URL_USER" ]; then
@@ -54,10 +55,15 @@ if [[ ! -f "$ROOT/.ssh/config" ]]; then
     echo $(cat "$ROOT/.ssh/config")
 fi
 
-if [[ -z "$URL_HOST" ]]; then
+if [[ -n "$URL_HOST" ]]; then
     echo "adding git host to known_hosts"
-    ssh-keyscan -t rsa "$URL_HOST" > "$ROOT/.ssh/known_hosts"
+    if [[ -n "$URL_PORT" ]]; then
+        ssh-keyscan -t rsa -p "$URL_PORT" "$URL_HOST" >> "$ROOT/.ssh/known_hosts"
+    else
+        ssh-keyscan -t rsa "$URL_HOST" >> "$ROOT/.ssh/known_hosts"
+    fi
 fi
+
 if [[ -z "$INPUT_SSH_KNOWN_HOSTS" ]]; then
     echo "adding github.com to known_hosts"
     ssh-keyscan -t rsa github.com >> "$ROOT/.ssh/known_hosts"
@@ -70,6 +76,8 @@ echo "adding ssh key"
 echo "$INPUT_SSH_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 cat "$ROOT/.ssh/id_rsa_sg" | ssh-add -
+
+return 
 
 echo "updating git config"
 git config core.sshCommand "sshpass -p $INPUT_SSH_PASSWORD ssh -vvv -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
