@@ -74,6 +74,7 @@ fi
 
 echo "adding ssh key"
 echo "$INPUT_SSH_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
+chmod 600 "$ROOT/.ssh/id_rsa_sg"
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 cat "$ROOT/.ssh/id_rsa_sg" | ssh-add -
 
