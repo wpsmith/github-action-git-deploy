@@ -1,0 +1,26 @@
+name: Deploy to a Git Repo
+description: >
+  Commits and pushes changes to a git repository. Written as a docker
+  container action.
+inputs:
+  repository:
+    description: The ssh url of the target repository.
+    required: true
+  ssh_key:
+    description: >
+      SSH key used to push to the registry. The SSH key is configured
+      with the local git config, enabling this action ro run
+      authenticated git commands.
+    required: true
+  name:
+    description: A name for the git user creating the git commit.
+    required: true
+  email:
+    description: An email for the git user creating the git commit.
+    required: true
+runs:
+  using: docker
+  image: Dockerfile
+branding:
+  color: red
+  icon: anchor
