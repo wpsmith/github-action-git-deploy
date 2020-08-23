@@ -2,10 +2,10 @@
 
 ROOT=./root
 
-echo "INPUT_GIT_EMAIL: $INPUT_GIT_EMAIL"
-echo "INPUT_GIT_NAME: $INPUT_GIT_NAME"
+echo "INPUT_EMAIL: $INPUT_EMAIL"
+echo "INPUT_NAME: $INPUT_NAME"
 echo "INPUT_REPOSITORY: $INPUT_REPOSITORY"
-echo "INPUT_SSH_PASS: $INPUT_SSH_PASS"
+echo "INPUT_SSH_PASSWORD: $INPUT_SSH_PASSWORD"
 echo "INPUT_SSH_PUBLIC_KEY: $INPUT_SSH_PUBLIC_KEY"
 echo "INPUT_SSH_PRIVATE_KEY: $INPUT_SSH_PRIVATE_KEY"
 echo "================================================"
@@ -119,7 +119,7 @@ if [[ -n "$INPUT_DEBUG" ]]; then
 fi
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 ssh-add "$ROOT/.ssh/id_rsa_sg"
-echo "$SSH_PASSWORD"
+echo "$INPUT_SSH_PASSWORD"
 
 git clone git@github.com:wpsmith/setantabooks.com.git app
 cd app
@@ -129,7 +129,7 @@ exit
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "updating git config"
 fi
-export SSHPASS="$SSH_PASSWORD"
+export SSHPASS="$INPUT_SSH_PASSWORD"
 if [[ -n "$INPUT_DEBUG" ]]; then
     git config core.sshCommand "sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 else
