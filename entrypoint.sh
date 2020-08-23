@@ -2,16 +2,18 @@
 
 ROOT=/root
 
-echo "Version: v$(cat VERSION)"
-echo "INPUT_EMAIL: $INPUT_EMAIL"
-echo "INPUT_NAME: $INPUT_NAME"
-echo "INPUT_REPOSITORY: $INPUT_REPOSITORY"
-echo "INPUT_SSH_PASSWORD: $INPUT_SSH_PASSWORD"
-echo "INPUT_SSH_PUBLIC_KEY: $INPUT_SSH_PUBLIC_KEY"
-echo "INPUT_SSH_PRIVATE_KEY: "
-echo "$INPUT_SSH_PRIVATE_KEY"
-echo "================================================"
-
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "================================================"
+    echo "Version: v$(cat VERSION)"
+    echo "INPUT_EMAIL: $INPUT_EMAIL"
+    echo "INPUT_NAME: $INPUT_NAME"
+    echo "INPUT_REPOSITORY: $INPUT_REPOSITORY"
+    echo "INPUT_SSH_PASSWORD: $INPUT_SSH_PASSWORD"
+    echo "INPUT_SSH_PUBLIC_KEY: $INPUT_SSH_PUBLIC_KEY"
+    echo "INPUT_SSH_PRIVATE_KEY: "
+    echo "$INPUT_SSH_PRIVATE_KEY"
+    echo "================================================"
+fi
 
 parse_url() {
     local url=""
@@ -136,27 +138,11 @@ if [[ -n "$INPUT_DEBUG" ]]; then
 fi
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
-# echo "adding ssh key"
-# ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-# ssh-add "$ROOT/.ssh/id_rsa_sg"
-# echo "$INPUT_SSH_PASSWORD"
-
-
-
-# git clone git@github.com:wpsmith/setantabooks.com.git app
-# cd app
-# cd ..
-# exit
-# END TO BE REMOVED
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "updating git config"
-    git config core.sshCommand "sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
-    # git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
-else
-    git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 fi
+git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 git config --global user.name "$INPUT_NAME"
 git config --global user.email "$INPUT_EMAIL"
 # git config --global ssh.variant ssh
@@ -169,19 +155,17 @@ git remote add upstream "$INPUT_REPOSITORY"
 branch=$(echo ${GITHUB_REF#refs/heads/})
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "pushing branch: $branch"
-    GIT_SSH_VARIANT="sshpass -e ssh" \
-    # GIT_TRACE=true \
-    # GIT_CURL_VERBOSE=true \
-    GIT_SSH_COMMAND="sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts" \
-    # GIT_TRACE_PACK_ACCESS=true \
-    # GIT_TRACE_PACKET=true \
-    # GIT_TRACE_PACKFILE=true \
-    # GIT_TRACE_PERFORMANCE=true \
-    # GIT_TRACE_SETUP=t/rue \
-    # GIT_TRACE_SHALLOW=true \
-    git push -fu upstream "$branch"
-else
-    git push -fu upstream "$branch"
+    # GIT_SSH_VARIANT="sshpass -e ssh"
+    # GIT_TRACE=true
+    # GIT_CURL_VERBOSE=true
+    # GIT_SSH_COMMAND="sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+    # GIT_TRACE_PACK_ACCESS=true 
+    # GIT_TRACE_PACKET=true 
+    # GIT_TRACE_PACKFILE=true 
+    # GIT_TRACE_PERFORMANCE=true 
+    # GIT_TRACE_SETUP=true 
+    # GIT_TRACE_SHALLOW=true
 fi
+    git push -fu upstream "$branch"
 
 exit
