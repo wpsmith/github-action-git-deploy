@@ -2,7 +2,7 @@
 
 ROOT=./root
 
-echo $(cat VERSION)
+echo "Version: v$(cat VERSION)"
 echo "INPUT_EMAIL: $INPUT_EMAIL"
 echo "INPUT_NAME: $INPUT_NAME"
 echo "INPUT_REPOSITORY: $INPUT_REPOSITORY"
@@ -37,14 +37,14 @@ parse_url() {
     URL_PATH="$(echo $url | grep / | cut -d/ -f2-)"
 }
 
-echo() {
-    case    ${IFS- } in
-    (\ *)   printf  %b\\n "$*";;
-    (*)     IFS=\ $IFS
-            printf  %b\\n "$*"
-            IFS=${IFS#?}
-    esac
-}
+# echo() {
+#     case    ${IFS- } in
+#     (\ *)   printf  %b\\n "$*";;
+#     (*)     IFS=\ $IFS
+#             printf  %b\\n "$*"
+#             IFS=${IFS#?}
+#     esac
+# }
 
 parse_url "$INPUT_REPOSITORY"
 
@@ -110,8 +110,8 @@ fi
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "creating ssh key files"
 fi
-printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
-# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
+# printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
+echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
 chmod 600 "$ROOT/.ssh/id_rsa_sg"
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo $(cat "$ROOT/.ssh/id_rsa_sg")
