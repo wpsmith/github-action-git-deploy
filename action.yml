@@ -12,6 +12,9 @@ inputs:
       with the local git config, enabling this action ro run
       authenticated git commands.
     required: true
+  ssh_known_hosts:
+    description: Known hosts to run ssh commands against.
+    required: false
   name:
     description: A name for the git user creating the git commit.
     required: true
