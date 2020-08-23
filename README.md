@@ -1,5 +1,7 @@
 # Git Deploy Github Action
 
+![check action](https://github.com/wpsmith/github-action-git-deploy/workflows/check%20action/badge.svg?branch=master)
+
 This action deploys a specified/current branch to a remote git repository.
 
 ## Inputs
