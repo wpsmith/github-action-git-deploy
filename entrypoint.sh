@@ -78,10 +78,11 @@ ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 cat "$ROOT/.ssh/id_rsa_sg" | ssh-add -
 
 echo "updating git config"
-git config core.sshCommand "sshpass -p $INPUT_SSH_PASSWORD ssh -vvv -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+export SSHPASS="$SSH_PASSWORD"
+git config core.sshCommand "sshpass -e ssh -vvv -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 git config --global user.name "$INPUT_NAME"
 git config --global user.email "$INPUT_EMAIL"
-git config --global ssh.variant ssh
+# git config --global ssh.variant ssh
 
 echo "adding remote repo"
 git remote add upstream "$INPUT_REPOSITORY"
@@ -91,7 +92,7 @@ echo "pushing branch: $branch"
 GIT_SSH_VARIANT="ssh" \
 GIT_TRACE=true \
 GIT_CURL_VERBOSE=true \
-GIT_SSH_COMMAND="sshpass -p $INPUT_SSH_PASSWORD ssh -vvv -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts" \
+GIT_SSH_COMMAND="sshpass -e ssh -vvv -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts" \
 GIT_TRACE_PACK_ACCESS=true \
 GIT_TRACE_PACKET=true \
 GIT_TRACE_PACKFILE=true \
