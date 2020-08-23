@@ -13,7 +13,10 @@ inputs:
       authenticated git commands.
     required: true
   ssh_known_hosts:
-    description: Known hosts to run ssh commands against.
+    description: Optional. Known hosts to run ssh commands against.
+    required: false
+  ssh_password:
+    description: Optional. Password for SSH command.
     required: false
   name:
     description: A name for the git user creating the git commit.
