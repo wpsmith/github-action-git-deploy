@@ -145,15 +145,17 @@ fi
 git remote add upstream "$INPUT_REPOSITORY"
 
 if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "getting the branch"
+    echo "getting the current branch"
 fi
+current_branch=$(echo ${GITHUB_REF#refs/heads/})
+
 if [[ -n "$INPUT_REMOTE_BRANCH" ]]; then
     branch="$INPUT_REMOTE_BRANCH"
 else
-    branch=$(echo ${GITHUB_REF#refs/heads/})
+    branch="$current_branch"
 fi
 if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "pushing branch: $branch"
+    echo "pushing current branch ($current_branch) to $branch"
     # GIT_SSH_VARIANT="sshpass -e ssh"
     # GIT_TRACE=true
     # GIT_CURL_VERBOSE=true
