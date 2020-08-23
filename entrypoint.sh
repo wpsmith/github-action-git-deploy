@@ -154,7 +154,8 @@ if [[ -n "$INPUT_DEBUG" ]]; then
 fi
 export SSHPASS="$INPUT_SSH_PASSWORD"
 if [[ -n "$INPUT_DEBUG" ]]; then
-    git config core.sshCommand "sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+    # git config core.sshCommand "sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+    git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 else
     git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 fi
