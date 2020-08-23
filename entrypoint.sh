@@ -70,9 +70,9 @@ if [[ ! -f "$ROOT/.ssh/config" ]]; then
     touch "$ROOT/.ssh/config"
     echo "Host $URL_HOST
   HostName $URL_HOST" >> "$ROOT/.ssh/config"
-    if [[ -f "$ROOT/.ssh/known_hosts" ]]; then
-        echo "  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
-    fi
+    # if [[ -f "$ROOT/.ssh/known_hosts" ]]; then
+    #     echo "  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
+    # fi
     if [ -n "$URL_PORT" ]; then
         echo "  Port $URL_PORT" >> "$ROOT/.ssh/config"
     fi
