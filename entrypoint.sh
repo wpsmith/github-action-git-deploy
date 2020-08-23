@@ -42,6 +42,7 @@ fi
 if [[ -z "$URL_HOST" ]]; then
     echo "adding git host to known_hosts"
     ssh-keyscan -t rsa "$URL_HOST" > "$ROOT/.ssh/known_hosts"
+fi
 if [[ -z "$INPUT_SSH_KNOWN_HOSTS" ]]; then
     echo "adding github.com to known_hosts"
     ssh-keyscan -t rsa github.com > "$ROOT/.ssh/known_hosts"
