@@ -1,6 +1,6 @@
 FROM alpine:3.10
 
-RUN apk add --no-cache openssh git bash sshpass openssl
+RUN apk add --no-cache openssh git bash sshpass
 
 COPY entrypoint.sh /entrypoint.sh
 
