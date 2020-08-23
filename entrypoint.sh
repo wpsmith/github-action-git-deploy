@@ -107,6 +107,25 @@ chmod 600 "$ROOT/.ssh/id_rsa_sg"
 printenvINPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
 chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
 
+# TO BE REMOVED
+echo $(cat "$ROOT/.ssh/id_rsa_sg")
+echo "Host github.com
+  HostName github.com
+  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
+
+
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "starting ssh agent"
+fi
+ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+ssh-add "$ROOT/.ssh/id_rsa_sg"
+echo "$SSH_PASSWORD"
+
+git clone git@github.com:wpsmith/setantabooks.com.git app
+cd app
+exit
+# END TO BE REMOVED
+
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "updating git config"
 fi
@@ -129,15 +148,15 @@ branch=$(echo ${GITHUB_REF#refs/heads/})
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "pushing branch: $branch"
     GIT_SSH_VARIANT="sshpass -e ssh" \
-    GIT_TRACE=true \
-    GIT_CURL_VERBOSE=true \
+    # GIT_TRACE=true \
+    # GIT_CURL_VERBOSE=true \
     GIT_SSH_COMMAND="sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts" \
-    GIT_TRACE_PACK_ACCESS=true \
-    GIT_TRACE_PACKET=true \
-    GIT_TRACE_PACKFILE=true \
-    GIT_TRACE_PERFORMANCE=true \
-    GIT_TRACE_SETUP=true \
-    GIT_TRACE_SHALLOW=true \
+    # GIT_TRACE_PACK_ACCESS=true \
+    # GIT_TRACE_PACKET=true \
+    # GIT_TRACE_PACKFILE=true \
+    # GIT_TRACE_PERFORMANCE=true \
+    # GIT_TRACE_SETUP=t/rue \
+    # GIT_TRACE_SHALLOW=true \
     git push -fu upstream "$branch"
 else
     git push -fu upstream "$branch"
