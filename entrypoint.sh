@@ -36,6 +36,15 @@ parse_url() {
     URL_PATH="$(echo $url | grep / | cut -d/ -f2-)"
 }
 
+echo() {
+    case    ${IFS- } in
+    (\ *)   printf  %b\\n "$*";;
+    (*)     IFS=\ $IFS
+            printf  %b\\n "$*"
+            IFS=${IFS#?}
+    esac
+}
+
 parse_url "$INPUT_REPOSITORY"
 
 if [[ ! -d "$ROOT/.ssh" ]]; then
@@ -98,32 +107,40 @@ else
 fi
 
 if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "adding ssh key"
+    echo "creating ssh key files"
 fi
-
 printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
 # echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
 chmod 600 "$ROOT/.ssh/id_rsa_sg"
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo $(cat "$ROOT/.ssh/id_rsa_sg")
+fi
+
 printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
 chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
+fi
+
+ls
 
 # TO BE REMOVED
-echo $(cat "$ROOT/.ssh/id_rsa_sg")
-echo "Host github.com
-  HostName github.com
-  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
+# echo "Host github.com
+#   HostName github.com
+#   IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
 
 
-if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "starting ssh agent"
-fi
-ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-ssh-add "$ROOT/.ssh/id_rsa_sg"
-echo "$INPUT_SSH_PASSWORD"
+# if [[ -n "$INPUT_DEBUG" ]]; then
+#     echo "starting ssh agent"
+# fi
+# ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+# ssh-add "$ROOT/.ssh/id_rsa_sg"
+# echo "$INPUT_SSH_PASSWORD"
 
-git clone git@github.com:wpsmith/setantabooks.com.git app
-cd app
-exit
+# git clone git@github.com:wpsmith/setantabooks.com.git app
+# cd app
+# cd ..
+# exit
 # END TO BE REMOVED
 
 if [[ -n "$INPUT_DEBUG" ]]; then
