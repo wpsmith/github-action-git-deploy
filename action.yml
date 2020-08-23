@@ -1,4 +1,4 @@
-name: Deploy to a Git Repo
+name: WPS Git Deploy
 description: >
   Commits and pushes changes to a git repository. Written as a docker
   container action.
