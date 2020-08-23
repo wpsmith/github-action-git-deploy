@@ -122,7 +122,8 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
 fi
 
-ls
+echo 'list files'
+ls -al
 
 # TO BE REMOVED
 # echo "Host github.com
