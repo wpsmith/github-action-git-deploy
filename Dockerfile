@@ -1,15 +1,8 @@
-  
-FROM debian:9.7-slim
+FROM alpine:3.10
 
-LABEL "com.github.actions.name"="GitHub Action for Git Deployment"
-LABEL "com.github.actions.description"="An action to deploy your repository to a a site via git."
-LABEL "com.github.actions.icon"="chevrons-right"
-LABEL "com.github.actions.color"="blue"
+RUN apk add --no-cache openssh git bash sshpass
 
-LABEL "repository"="http://github.com/wpsmith/github-action-git-deploy"
-LABEL "maintainer"="Travis Smith <t@wpsmith.net>"
+COPY entrypoint.sh /entrypoint.sh
 
-RUN apt-get update && apt-get install -y git
-
-ADD entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+ENV SSH_AUTH_SOCK /tmp/ssh_agent.sock
+ENTRYPOINT ["/bin/bash", "-c", "/entrypoint.sh"]
