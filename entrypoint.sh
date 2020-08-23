@@ -50,6 +50,7 @@ parse_url() {
 parse_url "$INPUT_REPOSITORY"
 export SSHPASS="$INPUT_SSH_PASSWORD"
 
+# Create .ssh directory
 if [[ ! -d "$ROOT/.ssh" ]]; then
     if [[ -n "$INPUT_DEBUG" ]]; then
         echo "creating $ROOT/.ssh"
@@ -57,35 +58,12 @@ if [[ ! -d "$ROOT/.ssh" ]]; then
     mkdir -p "$ROOT/.ssh"
 fi
 
+# Create known hosts.
 if [[ ! -f "$ROOT/.ssh/known_hosts" ]]; then
     if [[ -n "$INPUT_DEBUG" ]]; then
         echo "creating $ROOT/.ssh/known_hosts"
     fi
     touch "$ROOT/.ssh/known_hosts"
-fi
-
-if [[ ! -f "$ROOT/.ssh/config" ]]; then
-    if [[ -n "$INPUT_DEBUG" ]]; then
-        echo "creating .ssh/config"
-    fi
-    touch "$ROOT/.ssh/config"
-    echo "Host $URL_HOST
-  HostName $URL_HOST" >> "$ROOT/.ssh/config"
-    # if [[ -f "$ROOT/.ssh/known_hosts" ]]; then
-    #     echo "  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
-    # fi
-    if [ -n "$URL_PORT" ]; then
-        echo "  Port $URL_PORT" >> "$ROOT/.ssh/config"
-    fi
-    if [ -n "$URL_USER" ]; then
-        echo "  User $URL_USER" >> "$ROOT/.ssh/config"
-    fi
-
-    if [[ -n "$INPUT_DEBUG" ]]; then
-        echo $(cat "$ROOT/.ssh/config")
-    fi
-
-    chmod 600 "$ROOT/.ssh/config"
 fi
 
 if [[ -n "$URL_HOST" ]]; then
@@ -111,39 +89,56 @@ else
     echo "$INPUT_SSH_KNOWN_HOSTS" >> "$ROOT/.ssh/known_hosts"
 fi
 
-# if [[ -n "$INPUT_DEBUG" ]]; then
-#     echo "creating ssh key files"
-# fi
-## printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
+# SSH files.
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "creating ssh key files"
+fi
+printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
 # echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
-# chmod 600 "$ROOT/.ssh/id_rsa_sg"
-# if [[ -n "$INPUT_DEBUG" ]]; then
-#     echo $(cat "$ROOT/.ssh/id_rsa_sg")
-# fi
+chmod 600 "$ROOT/.ssh/id_rsa_sg"
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo $(cat "$ROOT/.ssh/id_rsa_sg")
+fi
 
-# printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
-# chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
-# if [[ -n "$INPUT_DEBUG" ]]; then
-#     echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
-# fi
+printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
+chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
+fi
 
-# echo 'list files'
-# ls -al
+# Createe SSH config
+if [[ ! -f "$ROOT/.ssh/config" ]]; then
+    if [[ -n "$INPUT_DEBUG" ]]; then
+        echo "creating .ssh/config"
+    fi
+    touch "$ROOT/.ssh/config"
+    echo "Host $URL_HOST
+  HostName $URL_HOST" >> "$ROOT/.ssh/config"
+    if [[ -f "$ROOT/.ssh/known_hosts" ]]; then
+        echo "  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
+    fi
+    if [ -n "$URL_PORT" ]; then
+        echo "  Port $URL_PORT" >> "$ROOT/.ssh/config"
+    fi
+    if [ -n "$URL_USER" ]; then
+        echo "  User $URL_USER" >> "$ROOT/.ssh/config"
+    fi
 
-# TO BE REMOVED
-# echo "Host github.com
-#   HostName github.com
-#   IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
+    if [[ -n "$INPUT_DEBUG" ]]; then
+        echo $(cat "$ROOT/.ssh/config")
+    fi
 
+    chmod 600 "$ROOT/.ssh/config"
+fi
 
 if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "starting ssh agent"
+    echo "starting ssh agent; adding key"
 fi
-# ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-# echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
-# echo "adding ssh key"
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-echo "$INPUT_SSH_KEY" | tr -d '\r' | ssh-add -
+echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
+# echo "adding ssh key"
+# ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
 # ssh-add "$ROOT/.ssh/id_rsa_sg"
 # echo "$INPUT_SSH_PASSWORD"
 
@@ -157,15 +152,8 @@ echo "$INPUT_SSH_KEY" | tr -d '\r' | ssh-add -
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "updating git config"
-fi
-
-
-sshpass -e ssh $URL_HOST
-echo "exit"
-
-if [[ -n "$INPUT_DEBUG" ]]; then
-    # git config core.sshCommand "sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
-    git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+    git config core.sshCommand "sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+    # git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 else
     git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 fi
