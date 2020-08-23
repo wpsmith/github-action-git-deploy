@@ -5,8 +5,7 @@ ROOT=/root
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "================================================"
     echo "Version: v$(cat VERSION)"
-    echo "INPUT_EMAIL: $INPUT_EMAIL"
-    echo "INPUT_NAME: $INPUT_NAME"
+    echo "INPUT_REMOTE_BRANCH: $INPUT_REMOTE_BRANCH"
     echo "INPUT_REPOSITORY: $INPUT_REPOSITORY"
     echo "INPUT_SSH_PASSWORD: $INPUT_SSH_PASSWORD"
     echo "INPUT_SSH_PUBLIC_KEY: $INPUT_SSH_PUBLIC_KEY"
@@ -40,16 +39,11 @@ parse_url() {
     URL_PATH="$(echo $url | grep / | cut -d/ -f2-)"
 }
 
-# echo() {
-#     case    ${IFS- } in
-#     (\ *)   printf  %b\\n "$*";;
-#     (*)     IFS=\ $IFS
-#             printf  %b\\n "$*"
-#             IFS=${IFS#?}
-#     esac
-# }
 
 parse_url "$INPUT_REPOSITORY"
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "Setting SSHPASS"
+fi
 export SSHPASS="$INPUT_SSH_PASSWORD"
 
 # Create .ssh directory
@@ -143,16 +137,21 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     echo "updating git config"
 fi
 git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
-git config --global user.name "$INPUT_NAME"
-git config --global user.email "$INPUT_EMAIL"
 # git config --global ssh.variant ssh
 
 if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "adding remote repo"
+    echo "adding remote upstream repo"
 fi
 git remote add upstream "$INPUT_REPOSITORY"
 
-branch=$(echo ${GITHUB_REF#refs/heads/})
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "getting the branch"
+fi
+if [[ -n "$INPUT_REMOTE_BRANCH" ]]; then
+    branch="$INPUT_REMOTE_BRANCH"
+else
+    branch=$(echo ${GITHUB_REF#refs/heads/})
+fi
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "pushing branch: $branch"
     # GIT_SSH_VARIANT="sshpass -e ssh"
@@ -166,6 +165,8 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     # GIT_TRACE_SETUP=true 
     # GIT_TRACE_SHALLOW=true
 fi
+
+GIT_SSH_COMMAND="sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts" \
     git push -fu upstream "$branch"
 
 exit
