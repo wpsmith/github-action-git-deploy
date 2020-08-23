@@ -69,8 +69,10 @@ if [[ ! -f "$ROOT/.ssh/config" ]]; then
     fi
     touch "$ROOT/.ssh/config"
     echo "Host $URL_HOST
-  HostName $URL_HOST
-  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
+  HostName $URL_HOST" >> "$ROOT/.ssh/config"
+    if [[ -f "$ROOT/.ssh/known_hosts" ]]; then
+        echo "  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
+    fi
     if [ -n "$URL_PORT" ]; then
         echo "  Port $URL_PORT" >> "$ROOT/.ssh/config"
     fi
@@ -111,21 +113,21 @@ fi
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "creating ssh key files"
 fi
-# printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
-echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
-chmod 600 "$ROOT/.ssh/id_rsa_sg"
-if [[ -n "$INPUT_DEBUG" ]]; then
-    echo $(cat "$ROOT/.ssh/id_rsa_sg")
-fi
+## printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
+# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
+# chmod 600 "$ROOT/.ssh/id_rsa_sg"
+# if [[ -n "$INPUT_DEBUG" ]]; then
+#     echo $(cat "$ROOT/.ssh/id_rsa_sg")
+# fi
 
-printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
-chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
-if [[ -n "$INPUT_DEBUG" ]]; then
-    echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
-fi
+# printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
+# chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
+# if [[ -n "$INPUT_DEBUG" ]]; then
+#     echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
+# fi
 
-echo 'list files'
-ls -al
+# echo 'list files'
+# ls -al
 
 # TO BE REMOVED
 # echo "Host github.com
