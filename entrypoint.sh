@@ -39,6 +39,21 @@ if [[ ! -f "$ROOT/.ssh/known_hosts" ]]; then
     touch "$ROOT/.ssh/known_hosts"
 fi
 
+if [[ ! -f "$ROOT/.ssh/config" ]]; then
+    echo "creating .ssh/config"
+    touch "$ROOT/.ssh/config"
+    echo "Host $URL_HOST
+  HostName $URL_HOST" >> "$ROOT/.ssh/config"
+    if [ -n "$URL_PASS" ]; then
+        echo "  Port $URL_PORT" >> "$ROOT/.ssh/config"
+    fi
+    if [ -n "$URL_USER" ]; then
+        echo "  User $URL_USER" >> "$ROOT/.ssh/config"
+    fi
+
+    echo $(cat "$ROOT/.ssh/config")
+fi
+
 if [[ -z "$URL_HOST" ]]; then
     echo "adding git host to known_hosts"
     ssh-keyscan -t rsa "$URL_HOST" > "$ROOT/.ssh/known_hosts"
@@ -60,12 +75,14 @@ echo "updating git config"
 git config core.sshCommand "sshpass -p $INPUT_SSH_PASSWORD ssh -vvv -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 git config --global user.name "$INPUT_NAME"
 git config --global user.email "$INPUT_EMAIL"
+git config --global ssh.variant ssh
 
 echo "adding remote repo"
 git remote add upstream "$INPUT_REPOSITORY"
 
 branch=$(echo ${GITHUB_REF#refs/heads/})
 echo "pushing branch: $branch"
+GIT_SSH_VARIANT="ssh" \
 GIT_TRACE=true \
 GIT_CURL_VERBOSE=true \
 GIT_SSH_COMMAND="sshpass -p $INPUT_SSH_PASSWORD ssh -vvv -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts" \
