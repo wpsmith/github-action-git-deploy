@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "Running pre-commit..."
+files=$(find . -name "VERSION" ! -path "*/vendor/*")
+for i in $files; do FILE="$i" gitsemver; done
