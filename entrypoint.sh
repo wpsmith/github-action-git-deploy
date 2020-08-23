@@ -64,10 +64,8 @@ git config --global user.email "$INPUT_EMAIL"
 echo "adding remote repo"
 git remote add upstream "$INPUT_REPOSITORY"
 
-echo "Branch:"
-echo ${GITHUB_REF#refs/heads/}
-
 branch=$(echo ${GITHUB_REF#refs/heads/})
 echo "pushing branch: $branch"
+git push -fu upstream "$branch"
 
 exit
