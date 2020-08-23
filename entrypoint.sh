@@ -57,7 +57,7 @@ ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 cat "$ROOT/.ssh/id_rsa_sg" | ssh-add -
 
 echo "updating git config"
-git config core.sshCommand "ssh -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+git config core.sshCommand "sshpass -p $INPUT_SSH_PASSWORD ssh -i $ROOT/.ssh/id_rsa_sg -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 git config --global user.name "$INPUT_NAME"
 git config --global user.email "$INPUT_EMAIL"
 
