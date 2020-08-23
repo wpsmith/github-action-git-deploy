@@ -136,7 +136,8 @@ ls -al
 # if [[ -n "$INPUT_DEBUG" ]]; then
 #     echo "starting ssh agent"
 # fi
-# ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
 # ssh-add "$ROOT/.ssh/id_rsa_sg"
 # echo "$INPUT_SSH_PASSWORD"
 
