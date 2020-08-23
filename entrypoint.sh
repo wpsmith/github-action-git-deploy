@@ -60,10 +60,10 @@ if [[ -z "$URL_HOST" ]]; then
 fi
 if [[ -z "$INPUT_SSH_KNOWN_HOSTS" ]]; then
     echo "adding github.com to known_hosts"
-    ssh-keyscan -t rsa github.com > "$ROOT/.ssh/known_hosts"
+    ssh-keyscan -t rsa github.com >> "$ROOT/.ssh/known_hosts"
 else
     echo "adding user defined known_hosts"
-    echo "$INPUT_SSH_KNOWN_HOSTS" > "$ROOT/.ssh/known_hosts"
+    echo "$INPUT_SSH_KNOWN_HOSTS" >> "$ROOT/.ssh/known_hosts"
 fi
 
 echo "adding ssh key"
