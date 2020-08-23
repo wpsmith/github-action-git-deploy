@@ -22,8 +22,8 @@ inputs:
     description: Optional. Known hosts to run ssh commands against.
     required: false
   ssh_password:
-    description: Optional. Password for SSH command.
-    required: false
+    description: Password for SSH command.
+    required: true
   name:
     description: A name for the git user creating the git commit.
     required: true
