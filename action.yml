@@ -6,7 +6,13 @@ inputs:
   repository:
     description: The ssh url of the target repository.
     required: true
-  ssh_key:
+  ssh_public_key:
+    description: >
+      SSH key used to push to the registry. The SSH key is configured
+      with the local git config, enabling this action ro run
+      authenticated git commands.
+    required: false
+  ssh_private_key:
     description: >
       SSH key used to push to the registry. The SSH key is configured
       with the local git config, enabling this action ro run
