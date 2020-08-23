@@ -1,6 +1,15 @@
 #!/bin/bash
 
-ROOT=/root
+ROOT=./root
+
+echo "INPUT_GIT_EMAIL: $INPUT_GIT_EMAIL"
+echo "INPUT_GIT_NAME: $INPUT_GIT_NAME"
+echo "INPUT_REPOSITORY: $INPUT_REPOSITORY"
+echo "INPUT_SSH_PASS: $INPUT_SSH_PASS"
+echo "INPUT_SSH_PUBLIC_KEY: $INPUT_SSH_PUBLIC_KEY"
+echo "INPUT_SSH_PRIVATE_KEY: $INPUT_SSH_PRIVATE_KEY"
+echo "================================================"
+
 
 parse_url() {
     local url=""
@@ -31,14 +40,14 @@ parse_url "$INPUT_REPOSITORY"
 
 if [[ ! -d "$ROOT/.ssh" ]]; then
     if [[ -n "$INPUT_DEBUG" ]]; then
-        echo "$ROOT/.ssh does not exist, creating it"
+        echo "creating $ROOT/.ssh"
     fi
     mkdir -p "$ROOT/.ssh"
 fi
 
 if [[ ! -f "$ROOT/.ssh/known_hosts" ]]; then
     if [[ -n "$INPUT_DEBUG" ]]; then
-        echo "$ROOT/.ssh/known_hosts does not exist, creating it"
+        echo "creating $ROOT/.ssh/known_hosts"
     fi
     touch "$ROOT/.ssh/known_hosts"
 fi
@@ -61,6 +70,8 @@ if [[ ! -f "$ROOT/.ssh/config" ]]; then
     if [[ -n "$INPUT_DEBUG" ]]; then
         echo $(cat "$ROOT/.ssh/config")
     fi
+
+    chmod 600 "$ROOT/.ssh/config"
 fi
 
 if [[ -n "$URL_HOST" ]]; then
@@ -89,10 +100,12 @@ fi
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "adding ssh key"
 fi
-echo "$INPUT_SSH_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
+
+printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
+# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
 chmod 600 "$ROOT/.ssh/id_rsa_sg"
-ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-cat "$ROOT/.ssh/id_rsa_sg" | ssh-add -
+printenvINPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
+chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "updating git config"
