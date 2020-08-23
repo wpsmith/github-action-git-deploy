@@ -48,6 +48,7 @@ parse_url() {
 # }
 
 parse_url "$INPUT_REPOSITORY"
+export SSHPASS="$INPUT_SSH_PASSWORD"
 
 if [[ ! -d "$ROOT/.ssh" ]]; then
     if [[ -n "$INPUT_DEBUG" ]]; then
@@ -146,6 +147,8 @@ echo "$INPUT_SSH_KEY" | tr -d '\r' | ssh-add -
 # ssh-add "$ROOT/.ssh/id_rsa_sg"
 # echo "$INPUT_SSH_PASSWORD"
 
+
+
 # git clone git@github.com:wpsmith/setantabooks.com.git app
 # cd app
 # cd ..
@@ -155,7 +158,11 @@ echo "$INPUT_SSH_KEY" | tr -d '\r' | ssh-add -
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "updating git config"
 fi
-export SSHPASS="$INPUT_SSH_PASSWORD"
+
+
+sshpass -e ssh $URL_HOST
+echo "exit"
+
 if [[ -n "$INPUT_DEBUG" ]]; then
     # git config core.sshCommand "sshpass -e ssh -vvv -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
     git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
