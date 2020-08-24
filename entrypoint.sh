@@ -142,23 +142,19 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     echo "starting ssh agent; adding key"
 fi
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-# echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
-echo $(cat "$ROOT/.ssh/id_rsa_sg") | ssh-add -
+echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
+# echo $(cat "$ROOT/.ssh/id_rsa_sg") | ssh-add -
 
 # Update git config.
-if [[ -n "$INPUT_DEBUG" ]]; then
+if [[ -n "$INPUT_DEBUG" ]]; then 
     echo "updating git config"
 fi
-export GIT_SSH_COMMAND="sshpass -p '$INPUT_SSH_PASSWORD' ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+export GIT_SSH_COMMAND="sshpass -p \"$INPUT_SSH_PASSWORD\" ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 git config core.sshCommand "$GIT_SSH_COMMAND"
 git config --global ssh.variant ssh
 
 if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "git config"
-    git --no-pager config -l
-
-    echo "git status"
-    git status
+    echo "git refs"
     git show-ref
 fi
 
@@ -167,6 +163,11 @@ if [[ -n "$INPUT_DEBUG" ]]; then
 fi
 git remote add upstream "$INPUT_REPOSITORY"
 git fetch --all
+
+# if [[ -n "$INPUT_DEBUG" ]]; then
+#     echo "git config"
+#     git --no-pager config -l
+# fi
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "getting the current branch"
