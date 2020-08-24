@@ -95,20 +95,23 @@ fi
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "creating ssh key files"
 fi
-# printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
-# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
-# chmod 600 "$ROOT/.ssh/id_rsa_sg"
-# if [[ -n "$INPUT_DEBUG" ]]; then
-#     echo "PRIVATE KEY:"
-#     echo $(cat "$ROOT/.ssh/id_rsa_sg")
-# fi
 
-# printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
-# chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
-# if [[ -n "$INPUT_DEBUG" ]]; then
-#     echo "PUBLIC KEY:"
-#     echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
-# fi
+printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
+# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
+chmod 600 "$ROOT/.ssh/id_rsa_sg"
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "PRIVATE KEY:"
+    echo $(cat "$ROOT/.ssh/id_rsa_sg")
+fi
+
+if [[ -n "$INPUT_SSH_PUBLIC_KEY" ]]; then
+    printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
+    chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
+    if [[ -n "$INPUT_DEBUG" ]]; then
+        echo "PUBLIC KEY:"
+        echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
+    fi
+fi
 
 # Createe SSH config
 if [[ ! -f "$ROOT/.ssh/config" ]]; then
@@ -139,15 +142,16 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     echo "starting ssh agent; adding key"
 fi
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
+# echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
+echo $(cat "$ROOT/.ssh/id_rsa_sg") | ssh-add -
 
+# Update git config.
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "updating git config"
 fi
 export GIT_SSH_COMMAND="sshpass -p '$INPUT_SSH_PASSWORD' ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 git config core.sshCommand "$GIT_SSH_COMMAND"
 git config --global ssh.variant ssh
-
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "git config"
