@@ -148,8 +148,8 @@ if [[ -n "$INPUT_DEBUG" ]]; then
 
     echo "git status"
     git status
+    git show-ref
 fi
-
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "adding remote upstream repo"
