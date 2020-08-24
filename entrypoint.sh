@@ -148,6 +148,7 @@ echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
 if [[ -n "$INPUT_DEBUG" ]]; then 
     echo "updating git config"
 fi
+git config --global credential.helper 'cache --timeout=300'
 export GIT_SSH_COMMAND="sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 export GIT_SSH_VARIANT="sshpass -e ssh"
 git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
@@ -158,7 +159,10 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     git show-ref
 fi
 
-# sshpass -p "$INPUT_SSH_PASSWORD" ssh -oUseRoaming=no -o UserKnownHostsFile="$ROOT/.ssh/known_hosts" -p "$URL_PORT" "$URL_USER@$URL_HOST"
+echo "-------SSH-------"
+sshpass -p "$INPUT_SSH_PASSWORD" ssh -oUseRoaming=no -o UserKnownHostsFile="$ROOT/.ssh/known_hosts" -p "$URL_PORT" "$URL_USER@$URL_HOST"
+# sshpass -p "$INPUT_SSH_PASSWORD" ssh -oUseRoaming=no -o UserKnownHostsFile="$ROOT/.ssh/known_hosts" -p "$URL_PORT" -l "$URL_USER" -W "$URL_HOST"
+echo "-------SSH-------"
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "adding remote upstream repo"
