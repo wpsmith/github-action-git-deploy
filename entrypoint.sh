@@ -86,6 +86,11 @@ else
     echo "$INPUT_SSH_KNOWN_HOSTS" >> "$ROOT/.ssh/known_hosts"
 fi
 
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "KNOWN_HOSTS FILE:"
+    echo $(cat "$ROOT/.ssh/known_hosts")
+fi
+
 # SSH files.
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "creating ssh key files"
