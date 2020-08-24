@@ -1,6 +1,6 @@
 FROM alpine:3.10
 
-RUN apk add --no-cache openssh git bash sshpass
+RUN apk add --no-cache openssh git bash sshpass expect coreutils
 
 COPY entrypoint.sh /entrypoint.sh
 
