@@ -141,6 +141,16 @@ export GIT_SSH_COMMAND="sshpass -p $INPUT_SSH_PASSWORD ssh -o UserKnownHostsFile
 git config core.sshCommand "$GIT_SSH_COMMAND"
 git config --global ssh.variant ssh
 
+
+if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "git config"
+    git --no-pager config -l
+
+    echo "git status"
+    git status
+fi
+
+
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "adding remote upstream repo"
 fi
