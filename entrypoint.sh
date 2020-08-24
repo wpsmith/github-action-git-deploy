@@ -45,7 +45,6 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     echo "Setting SSHPASS"
 fi
 export SSHPASS="$INPUT_SSH_PASSWORD"
-echo "Setting SSHPASS: $SSHPASS"
 
 # Create .ssh directory
 if [[ ! -d "$ROOT/.ssh" ]]; then
@@ -145,13 +144,14 @@ ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
 # echo $(cat "$ROOT/.ssh/id_rsa_sg") | ssh-add -
 
-# Update git config.
+# Update git settings/config.
 if [[ -n "$INPUT_DEBUG" ]]; then 
     echo "updating git config"
 fi
 export GIT_SSH_COMMAND="sshpass -p $INPUT_SSH_PASSWORD ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
-git config core.sshCommand "$GIT_SSH_COMMAND"
-git config --global ssh.variant ssh
+export GIT_SSH_VARIANT="sshpass -p $INPUT_SSH_PASSWORD ssh"
+git config core.sshCommand "sshpass -p $INPUT_SSH_PASSWORD ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+git config --global ssh.variant "sshpass -p $INPUT_SSH_PASSWORD ssh"
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "git refs"
