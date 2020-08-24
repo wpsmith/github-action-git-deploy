@@ -6,12 +6,12 @@ inputs:
   repository:
     description: The ssh url of the target repository.
     required: true
-  ssh_public_key:
-    description: >
-      SSH key used to push to the registry. The SSH key is configured
-      with the local git config, enabling this action ro run
-      authenticated git commands.
-    required: false
+  # ssh_public_key:
+  #   description: >
+  #     SSH key used to push to the registry. The SSH key is configured
+  #     with the local git config, enabling this action ro run
+  #     authenticated git commands.
+  #   required: false
   ssh_private_key:
     description: >
       SSH key used to push to the registry. The SSH key is configured
@@ -24,12 +24,9 @@ inputs:
   ssh_password:
     description: Password for SSH command.
     required: true
-  name:
-    description: A name for the git user creating the git commit.
-    required: true
-  email:
-    description: An email for the git user creating the git commit.
-    required: true
+  remote_branch:
+    description: Optional. Set the remote branch. Defaults to same branch the process is running.
+    required: false
   debug:
     description: Verbose output.
     required: false
