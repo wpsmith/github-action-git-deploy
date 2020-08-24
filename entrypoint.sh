@@ -2,17 +2,17 @@
 
 ROOT=/root
 
-if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "================================================"
-    echo "Version: v$(cat VERSION)"
-    echo "INPUT_REMOTE_BRANCH: $INPUT_REMOTE_BRANCH"
-    echo "INPUT_REPOSITORY: $INPUT_REPOSITORY"
-    echo "INPUT_SSH_PASSWORD: $INPUT_SSH_PASSWORD"
-    echo "INPUT_SSH_PUBLIC_KEY: $INPUT_SSH_PUBLIC_KEY"
-    echo "INPUT_SSH_PRIVATE_KEY: "
-    echo "$INPUT_SSH_PRIVATE_KEY"
-    echo "================================================"
-fi
+# if [[ -n "$INPUT_DEBUG" ]]; then
+#     echo "================================================"
+#     echo "Version: v$(cat VERSION)"
+#     echo "INPUT_REMOTE_BRANCH: $INPUT_REMOTE_BRANCH"
+#     echo "INPUT_REPOSITORY: $INPUT_REPOSITORY"
+#     echo "INPUT_SSH_PASSWORD: $INPUT_SSH_PASSWORD"
+#     echo "INPUT_SSH_PUBLIC_KEY: $INPUT_SSH_PUBLIC_KEY"
+#     echo "INPUT_SSH_PRIVATE_KEY: "
+#     echo "$INPUT_SSH_PRIVATE_KEY"
+#     echo "================================================"
+# fi
 
 parse_url() {
     local url=""
@@ -39,6 +39,13 @@ parse_url() {
     URL_PATH="$(echo $url | grep / | cut -d/ -f2-)"
 }
 
+# echo()
+#     case    ${IFS- } in
+#     (\ *)   printf  %b\\n "$*";;
+#     (*)     IFS=\ $IFS
+#             printf  %b\\n "$*"
+#             IFS=${IFS#?}
+#     esac
 
 parse_url "$INPUT_REPOSITORY"
 if [[ -n "$INPUT_DEBUG" ]]; then
@@ -88,7 +95,7 @@ fi
 # KNOWN_HOSTS debug.
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "KNOWN_HOSTS FILE:"
-    echo $(cat "$ROOT/.ssh/known_hosts")
+    echo "$(cat "$ROOT/.ssh/known_hosts")"
 fi
 
 # SSH files.
@@ -96,34 +103,39 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     echo "creating ssh key files"
 fi
 
-# printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
-# # echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
-# chmod 600 "$ROOT/.ssh/id_rsa_sg"
-if [[ -n "$INPUT_DEBUG" ]]; then
-    echo "PRIVATE KEY:"
-    echo $(cat "$ROOT/.ssh/id_rsa_sg")
-fi
+# echo "$INPUT_SSH_PRIVATE_KEY" > "$ROOT/.ssh/id_rsa"
+printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa"
+# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa"
+chmod 600 "$ROOT/.ssh/id_rsa"
+# if [[ -n "$INPUT_DEBUG" ]]; then
+#     echo "PRIVATE KEY:"
+#     echo "$(cat "$ROOT/.ssh/id_rsa")"
+# fi
 
 if [[ -n "$INPUT_SSH_PUBLIC_KEY" ]]; then
-    printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
-    chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
-    if [[ -n "$INPUT_DEBUG" ]]; then
-        echo "PUBLIC KEY:"
-        echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
-    fi
+    printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa.pub"
+    chmod 600 "$ROOT/.ssh/id_rsa.pub"
+    # if [[ -n "$INPUT_DEBUG" ]]; then
+    #     echo "PUBLIC KEY:"
+    #     echo "$(cat "$ROOT/.ssh/id_rsa.pub")"
+    # fi
 fi
 
-# Createe SSH config
+# Create SSH config.
 if [[ ! -f "$ROOT/.ssh/config" ]]; then
     if [[ -n "$INPUT_DEBUG" ]]; then
         echo "creating .ssh/config"
     fi
     touch "$ROOT/.ssh/config"
     echo "Host $URL_HOST
-  HostName $URL_HOST" >> "$ROOT/.ssh/config"
+  HostName $URL_HOST
+  AddKeysToAgent yes" >> "$ROOT/.ssh/config"
     
-    if [[ -f "$ROOT/.ssh/id_rsa_sg" ]]; then
-        echo "  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
+    if [[ -f "$ROOT/.ssh/id_rsa" ]]; then
+        if [[ -n "$INPUT_DEBUG" ]]; then
+            echo "id_rsa exists adding to config"
+        fi
+        echo "  IdentityFile $ROOT/.ssh/id_rsa" >> "$ROOT/.ssh/config"
     fi
     if [ -n "$URL_PORT" ]; then
         echo "  Port $URL_PORT" >> "$ROOT/.ssh/config"
@@ -133,7 +145,7 @@ if [[ ! -f "$ROOT/.ssh/config" ]]; then
     fi
 
     if [[ -n "$INPUT_DEBUG" ]]; then
-        echo $(cat "$ROOT/.ssh/config")
+        echo "$(cat "$ROOT/.ssh/config")"
     fi
 
     chmod 600 "$ROOT/.ssh/config"
@@ -143,9 +155,22 @@ fi
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "starting ssh agent; adding key"
 fi
+
+function add_ssh_keys () {
+  if ssh-add -l | grep -q "$1"; then
+    echo "$1 key is ready"
+  else
+    /usr/bin/expect -c "
+    spawn /usr/bin/ssh-add "$1";
+    expect 'Enter passphrase';
+    send $2\r;
+    expect eof;"
+  fi
+}
+
+# ssh-agent -a "$SSH_AUTH_SOCK"
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
-echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
-# echo $(cat "$ROOT/.ssh/id_rsa_sg") | ssh-add -
+add_ssh_keys "$ROOT/.ssh/id_rsa" "$INPUT_SSH_PASSWORD"
 
 # Update git settings/config.
 if [[ -n "$INPUT_DEBUG" ]]; then 
