@@ -139,7 +139,7 @@ if [[ -n "$INPUT_DEBUG" ]]; then
 fi
 export GIT_SSH_COMMAND="sshpass -p $INPUT_SSH_PASSWORD ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
 git config core.sshCommand "$GIT_SSH_COMMAND"
-# git config --global ssh.variant ssh
+git config --global ssh.variant ssh
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "adding remote upstream repo"
