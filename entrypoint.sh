@@ -143,6 +143,7 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     echo "adding remote upstream repo"
 fi
 git remote add upstream "$INPUT_REPOSITORY"
+git fetch --all
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "getting the current branch"
