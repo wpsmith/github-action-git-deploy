@@ -168,7 +168,6 @@ function add_ssh_keys () {
   fi
 }
 
-# ssh-agent -a "$SSH_AUTH_SOCK"
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 add_ssh_keys "$ROOT/.ssh/id_rsa" "$INPUT_SSH_PASSWORD"
 
@@ -223,6 +222,11 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     # GIT_TRACE_SHALLOW=true
 fi
 
-git push -f upstream "HEAD:$branch"
+if [[ -n "$branch" ]]; then
+    git push -f upstream "HEAD:$branch"
+else
+    echo "No branch!" 1>&2
+    exit 64
+fi
 
 exit
