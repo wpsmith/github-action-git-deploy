@@ -181,6 +181,6 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     # GIT_TRACE_SHALLOW=true
 fi
 
-git push -f upstream "$branch"
+git push -f upstream "HEAD:$branch"
 
 exit
