@@ -148,15 +148,17 @@ echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
 if [[ -n "$INPUT_DEBUG" ]]; then 
     echo "updating git config"
 fi
-export GIT_SSH_COMMAND="sshpass -p $INPUT_SSH_PASSWORD ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
-export GIT_SSH_VARIANT="sshpass -p $INPUT_SSH_PASSWORD ssh"
-git config core.sshCommand "sshpass -p $INPUT_SSH_PASSWORD ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
-git config --global ssh.variant "sshpass -p $INPUT_SSH_PASSWORD ssh"
+export GIT_SSH_COMMAND="sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+export GIT_SSH_VARIANT="sshpass -e ssh"
+git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+git config --global ssh.variant "sshpass -e ssh"
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "git refs"
     git show-ref
 fi
+
+# sshpass -p "$INPUT_SSH_PASSWORD" ssh -oUseRoaming=no -o UserKnownHostsFile="$ROOT/.ssh/known_hosts" -p "$URL_PORT" "$URL_USER@$URL_HOST"
 
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "adding remote upstream repo"
