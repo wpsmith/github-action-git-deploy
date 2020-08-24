@@ -45,6 +45,7 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     echo "Setting SSHPASS"
 fi
 export SSHPASS="$INPUT_SSH_PASSWORD"
+echo "Setting SSHPASS: $SSHPASS"
 
 # Create .ssh directory
 if [[ ! -d "$ROOT/.ssh" ]]; then
