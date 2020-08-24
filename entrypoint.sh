@@ -54,7 +54,7 @@ if [[ ! -d "$ROOT/.ssh" ]]; then
     mkdir -p "$ROOT/.ssh"
 fi
 
-# Create known hosts.
+# Create KNOWN_HOSTS.
 if [[ ! -f "$ROOT/.ssh/known_hosts" ]]; then
     if [[ -n "$INPUT_DEBUG" ]]; then
         echo "creating $ROOT/.ssh/known_hosts"
@@ -85,6 +85,7 @@ else
     echo "$INPUT_SSH_KNOWN_HOSTS" >> "$ROOT/.ssh/known_hosts"
 fi
 
+# KNOWN_HOSTS debug.
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "KNOWN_HOSTS FILE:"
     echo $(cat "$ROOT/.ssh/known_hosts")
@@ -95,9 +96,9 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     echo "creating ssh key files"
 fi
 
-printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
-# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
-chmod 600 "$ROOT/.ssh/id_rsa_sg"
+# printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
+# # echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
+# chmod 600 "$ROOT/.ssh/id_rsa_sg"
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "PRIVATE KEY:"
     echo $(cat "$ROOT/.ssh/id_rsa_sg")
@@ -120,6 +121,7 @@ if [[ ! -f "$ROOT/.ssh/config" ]]; then
     touch "$ROOT/.ssh/config"
     echo "Host $URL_HOST
   HostName $URL_HOST" >> "$ROOT/.ssh/config"
+    
     if [[ -f "$ROOT/.ssh/id_rsa_sg" ]]; then
         echo "  IdentityFile $ROOT/.ssh/id_rsa_sg" >> "$ROOT/.ssh/config"
     fi
@@ -137,6 +139,7 @@ if [[ ! -f "$ROOT/.ssh/config" ]]; then
     chmod 600 "$ROOT/.ssh/config"
 fi
 
+# SSH Agent.
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "starting ssh agent; adding key"
 fi
