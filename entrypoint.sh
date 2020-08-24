@@ -169,6 +169,6 @@ if [[ -n "$INPUT_DEBUG" ]]; then
 fi
 
 GIT_SSH_COMMAND="sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts" \
-    git push -fu upstream "$branch"
+    git push -f upstream "$branch"
 
 exit
