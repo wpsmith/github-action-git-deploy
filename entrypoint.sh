@@ -136,7 +136,8 @@ echo "$INPUT_SSH_PRIVATE_KEY" | ssh-add -
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "updating git config"
 fi
-git config core.sshCommand "sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+export GIT_SSH_COMMAND="sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts"
+git config core.sshCommand "$GIT_SSH_COMMAND"
 # git config --global ssh.variant ssh
 
 if [[ -n "$INPUT_DEBUG" ]]; then
@@ -169,7 +170,6 @@ if [[ -n "$INPUT_DEBUG" ]]; then
     # GIT_TRACE_SHALLOW=true
 fi
 
-GIT_SSH_COMMAND="sshpass -e ssh -o UserKnownHostsFile=$ROOT/.ssh/known_hosts" \
-    git push -f upstream "$branch"
+git push -f upstream "$branch"
 
 exit
