@@ -95,16 +95,18 @@ fi
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "creating ssh key files"
 fi
-printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
-# echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
+# printenv INPUT_SSH_PRIVATE_KEY > "$ROOT/.ssh/id_rsa_sg"
+echo "$INPUT_SSH_PRIVATE_KEY" | tr -d '\r' > "$ROOT/.ssh/id_rsa_sg"
 chmod 600 "$ROOT/.ssh/id_rsa_sg"
 if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "PRIVATE KEY:"
     echo $(cat "$ROOT/.ssh/id_rsa_sg")
 fi
 
 printenv INPUT_SSH_PUBLIC_KEY > "$ROOT/.ssh/id_rsa_sg.pub"
 chmod 600 "$ROOT/.ssh/id_rsa_sg.pub"
 if [[ -n "$INPUT_DEBUG" ]]; then
+    echo "PUBLIC KEY:"
     echo $(cat "$ROOT/.ssh/id_rsa_sg.pub")
 fi
 
