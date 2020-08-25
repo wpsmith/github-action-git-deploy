@@ -16,36 +16,38 @@ ROOT=/root
 
 parse_url() {
     local url=""
-    URL_PROTO="$(echo $1 | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+    URL_PROTO="$(echo "$1" | grep :// | sed -e's,^\(.*://\).*,\1,g')"
     # remove the protocol
-    url="$(echo ${1/$URL_PROTO/})"
+    url="${1/$URL_PROTO/}"
     # extract the user (if any)
-    URL_USERPASS="$(echo $url | grep @ | cut -d@ -f1)"
-    URL_PASS="$(echo $URL_USERPASS | grep : | cut -d: -f2)"
+    URL_USERPASS="$(echo "$url" | grep @ | cut -d@ -f1)"
+    URL_PASS="$(echo "$URL_USERPASS" | grep : | cut -d: -f2)"
     if [ -n "$URL_PASS" ]; then
-        URL_USER="$(echo $URL_USERPASS | grep : | cut -d: -f1)"
+        URL_USER="$(echo "$URL_USERPASS" | grep : | cut -d: -f1)"
     else
-        URL_USER=$URL_USERPASS
+        URL_USER="$URL_USERPASS"
     fi
 
     # extract the host
-    URL_HOST="$(echo ${url/$URL_USER@/} | cut -d/ -f1)"
+    URL_HOST="$(echo "${url/$URL_USER@/}" | cut -d/ -f1)"
     # by request - try to extract the port
-    URL_PORT="$(echo $URL_HOST | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
+    URL_PORT="$(echo "$URL_HOST" | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
     if [ -n "$URL_PORT" ]; then
-        URL_HOST="$(echo $URL_HOST | grep : | cut -d: -f1)"
+        URL_HOST="$(echo "$URL_HOST" | grep : | cut -d: -f1)"
     fi
     # extract the path (if any)
-    URL_PATH="$(echo $url | grep / | cut -d/ -f2-)"
+    URL_PATH="$(echo "$url" | grep / | cut -d/ -f2-)"
+    
+    if [[ -n "$INPUT_DEBUG" ]]; then
+            echo "URL: v$1"
+            echo "URL_PROTO: $URL_PROTO"
+            echo "URL_USER:  $URL_USER"
+            echo "URL_PASS:  $URL_PASS"
+            echo "URL_HOST:  URL_HOST"
+            echo "URL_PORT:  $URL_PORT: "
+            echo "URL_PATH:  $URL_PATH"
+    fi
 }
-
-# echo()
-#     case    ${IFS- } in
-#     (\ *)   printf  %b\\n "$*";;
-#     (*)     IFS=\ $IFS
-#             printf  %b\\n "$*"
-#             IFS=${IFS#?}
-#     esac
 
 parse_url "$INPUT_REPOSITORY"
 if [[ -n "$INPUT_DEBUG" ]]; then
@@ -95,7 +97,7 @@ fi
 # KNOWN_HOSTS debug.
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "KNOWN_HOSTS FILE:"
-    echo "$(cat "$ROOT/.ssh/known_hosts")"
+   cat "$ROOT/.ssh/known_hosts"
 fi
 
 # SSH files.
@@ -145,7 +147,7 @@ if [[ ! -f "$ROOT/.ssh/config" ]]; then
     fi
 
     if [[ -n "$INPUT_DEBUG" ]]; then
-        echo "$(cat "$ROOT/.ssh/config")"
+        cat "$ROOT/.ssh/config"
     fi
 
     chmod 600 "$ROOT/.ssh/config"
@@ -161,7 +163,7 @@ function add_ssh_keys () {
     echo "$1 key is ready"
   else
     /usr/bin/expect -c "
-    spawn /usr/bin/ssh-add "$1";
+    spawn /usr/bin/ssh-add \"$1\";
     expect 'Enter passphrase';
     send $2\r;
     expect eof;"
@@ -171,8 +173,23 @@ function add_ssh_keys () {
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 add_ssh_keys "$ROOT/.ssh/id_rsa" "$INPUT_SSH_PASSWORD"
 
+echo "PW, via coreutils"
 echo "$INPUT_SSH_PASSWORD" | base64 --encode
-echo "$(cat "$ROOT/.ssh/id_rsa")" | base64 --encode
+echo "PW, via openssl"
+openssl enc -base64 <<< "$INPUT_SSH_PASSWORD"
+
+echo "PK, via coreutils"
+base64 --encode < "$ROOT/.ssh/id_rsa"
+echo "PK, via openssl"
+openssl enc -base64 <<< "$(cat "$ROOT/.ssh/id_rsa")"
+
+echo "Host github.com
+  HostName github.com
+  AddKeysToAgent yes
+  User git
+  PreferredAuthentications publickey
+  Port 22
+  IdentityFile $ROOT/.ssh/id_rsa" >> "$ROOT/.ssh/config"
 
 # Update git settings/config.
 if [[ -n "$INPUT_DEBUG" ]]; then 
@@ -204,7 +221,7 @@ echo "$INPUT_SSH_PASSWORD"
 if [[ -n "$INPUT_DEBUG" ]]; then
     echo "getting the current branch"
 fi
-current_branch=$(echo ${GITHUB_REF#refs/heads/})
+current_branch=${GITHUB_REF#refs/heads/}
 
 if [[ -n "$INPUT_REMOTE_BRANCH" ]]; then
     branch="$INPUT_REMOTE_BRANCH"
