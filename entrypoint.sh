@@ -39,7 +39,7 @@ parse_url() {
     URL_PATH="$(echo "$url" | grep / | cut -d/ -f2-)"
     
     if [[ -n "$INPUT_DEBUG" ]]; then
-            echo "URL: v$1"
+            echo "URL: $1"
             echo "URL_PROTO: $URL_PROTO"
             echo "URL_USER:  $URL_USER"
             echo "URL_PASS:  $URL_PASS"
@@ -173,23 +173,19 @@ function add_ssh_keys () {
 ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
 add_ssh_keys "$ROOT/.ssh/id_rsa" "$INPUT_SSH_PASSWORD"
 
-echo "PW, via coreutils"
-echo "$INPUT_SSH_PASSWORD" | base64 --encode
-echo "PW, via openssl"
-openssl enc -base64 <<< "$INPUT_SSH_PASSWORD"
+# if [[ -n "$INPUT_DEBUG" ]]; then 
+#     openssl enc -base64 <<< "$INPUT_SSH_PASSWORD"
+#     openssl enc -base64 <<< "$(cat "$ROOT/.ssh/id_rsa")"
+# fi
 
-echo "PK, via coreutils"
-base64 --encode < "$ROOT/.ssh/id_rsa"
-echo "PK, via openssl"
-openssl enc -base64 <<< "$(cat "$ROOT/.ssh/id_rsa")"
-
-echo "Host github.com
-  HostName github.com
-  AddKeysToAgent yes
-  User git
-  PreferredAuthentications publickey
-  Port 22
-  IdentityFile $ROOT/.ssh/id_rsa" >> "$ROOT/.ssh/config"
+# # Add github.com to SSH config; just because.
+# echo "Host github.com
+#   HostName github.com
+#   AddKeysToAgent yes
+#   User git
+#   PreferredAuthentications publickey
+#   Port 22
+#   IdentityFile $ROOT/.ssh/id_rsa" >> "$ROOT/.ssh/config"
 
 # Update git settings/config.
 if [[ -n "$INPUT_DEBUG" ]]; then 
